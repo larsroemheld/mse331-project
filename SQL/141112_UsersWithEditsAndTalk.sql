@@ -1,4 +1,4 @@
-select user_name, user_registration, user_editcount, page_counter, count(*) as count_talkrevisions
+select user_name, user_id, user_registration, user_editcount, count(*) as count_talkrevisions
 from user 
 join page on page_title = user_name
 left join revision_userindex on rev_page = page_id
