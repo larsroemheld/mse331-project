@@ -89,6 +89,8 @@ test$first_day_edit = as.factor(test$first_day_edit)
 train$high_activity = as.integer(train$high_activity)
 test$high_activity  = as.integer(test$high_activity)
 
+
+set.seed(1345677)
 gbm_model = gbm(formula,
                 data = train,
                 distribution = "adaboost",
@@ -96,7 +98,7 @@ gbm_model = gbm(formula,
                 interaction.depth = 15,
                 n.minobsinnode = 1,
                 shrinkage = 0.01,
-                bag.fraction = 0.9,
+                bag.fraction = 0.75,
                 cv.folds = 0,
                 n.cores = 4,
                 train.fraction = 1.0,
