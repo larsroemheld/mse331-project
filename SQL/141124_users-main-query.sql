@@ -162,4 +162,3 @@ join
 
 on edits.user_id = thanks.user_id and edits.weekno = thanks.weekno
 
-limit 50
