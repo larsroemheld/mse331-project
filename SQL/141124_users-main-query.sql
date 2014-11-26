@@ -1,4 +1,4 @@
-# Get a list of all users registered in 2013, with a weekly overview of activity
+# Get a list of all eligible users registered in 2013, with a weekly overview of activity
 # 
 # Created: Lars Roemheld, 11/24/14
 #
