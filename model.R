@@ -3,25 +3,36 @@ data = read.csv("dataset.csv", header=TRUE)
 data$high_activity = data$adjusted_user_editcount - data$number_of_edits_first_month > 0
 sum(data$high_activity) / nrow(data)
 
+# Normalize all sentiment scores:
+# input: count of sentimental words
+# output: share of sentimental words in total wordcount
+data$liu_positive_score = data$liu_positive_score / data$word_count
+data$liu_negative_score = data$liu_negative_score / data$word_count
+data$nrc_anger_score = data$nrc_anger_score / data$word_count
+data$nrc_anticipation_score = data$nrc_anticipation_score / data$word_count
+data$nrc_disgust_score = data$nrc_disgust_score / data$word_count
+data$nrc_fear_score = data$nrc_fear_score / data$word_count
+data$nrc_joy_score = data$nrc_joy_score / data$word_count
+data$nrc_negative_score = data$nrc_negative_score / data$word_count
+data$nrc_positive_score = data$nrc_positive_score / data$word_count
+data$nrc_sadness_score = data$nrc_sadness_score / data$word_count
+data$nrc_surprise_score = data$nrc_surprise_score / data$word_count
+data$nrc_trust_score = data$nrc_trust_score / data$word_count
+
+
 set.seed(1)
 
-num.test.examples = 87
+num.test.examples = floor(nrow(data) * 0.1);
 
 in.test <- sample(seq_len(nrow(data)), size = num.test.examples)
-
 
 train <- data[-in.test,]
 test <- data[in.test,]
 
 
 formula = as.formula(high_activity ~ 
-                       first_day_edit + 
-                       days_to_first_edit +
-                       days_to_last_edit +
-                       average_days_since_reg +
                        number_of_edits_first_month +
                        max_edits_per_day +
-                       max_activity_day +
                        month +
                        #################SENTIMENT FEATURES
                        word_count +
