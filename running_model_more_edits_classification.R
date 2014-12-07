@@ -1,9 +1,15 @@
+# Model week-on-week gain in edits above some threshold
+# Taken over by roemheld@stanford.edu from previous code of sergiomo@stanford.edu
+#
+#
 
-data = read.csv("rolling_dataset.csv", header=TRUE)
+
+
+data = read.csv("rolling_dataset_sigmas.csv", header=TRUE)
 
 data$user_id = NULL
 data$edits_num = data$edits
-data$edits = as.factor(data$edits - data$n1_numWeekEdits > 0)
+data$edits = as.factor(abs(data$edits - data$n1_numWeekEdits) > data$std_dev)
 # LR: > 0 implies "is it greater". Replace with sigma for threshold analysis.
 
 
