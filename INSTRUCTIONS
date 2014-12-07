@@ -6,6 +6,6 @@
 6. Run: cat extracted.tsv | python text_features.py > text_features.tsv
 7. Run: text_features_joinUserId.R
 8. Run: process_running_data.R (requires user-thanks-edits-concise.R to be run first)
-9. Run: cat merged_weekly.csv | python running_data.py > rolling_dataset.csv
+9. Run: cat merged_weekly.csv | python process_running_data.py > rolling_dataset.csv
 10. Train a model with running_model_more_edits_classification.R
 
