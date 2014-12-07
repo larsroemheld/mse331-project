@@ -1,4 +1,4 @@
-sentiment <- read.csv("text_features_with_userid.csv", header=TRUE)
+sentiment <- read.csv("text_features_part2_with_userid.csv", header=TRUE)
 u1 = length(unique(sentiment$user_to))
 
 sentiment2 <- sentiment
