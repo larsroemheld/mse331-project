@@ -1,7 +1,12 @@
+# Add a "week_number_since_registration" column to the user-thanks-edits.tsv file
+# and remove week 53 as well as users with inconsistent registration dates.
+# 
+# Created: Sergiomo@stanford.edu
+# 
+
 library(data.table)
 library(ggplot2)
 library(reshape)
-
 
 data <- read.table('users-thanks-edits.tsv', header=TRUE, sep="\t")
 
