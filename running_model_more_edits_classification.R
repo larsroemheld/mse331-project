@@ -4,6 +4,8 @@ data = read.csv("rolling_dataset.csv", header=TRUE)
 data$user_id = NULL
 data$edits_num = data$edits
 data$edits = as.factor(data$edits - data$n1_numWeekEdits > 0)
+# LR: > 0 implies "is it greater". Replace with sigma for threshold analysis.
+
 
 #normalize sentiment scores
 data$n1_liu_positive_score     = data$n1_liu_positive_score / data$n1_word_count
@@ -37,8 +39,8 @@ data[is.na(data)] = 0
 #remove observations with more than 1000 edits
 #data = data[data$edits <= 1000,]
 
+# LR: display how often edits is TRUE (i.e. greater than sigma/0)
 sum(data$edits > 0) / nrow(data)
-
 
 
 #split dataset into train and test sets
@@ -111,7 +113,7 @@ glm.test.TN = sum(glm.test.predictions == FALSE & test$edits == FALSE)
 glm.test.FP = sum(glm.test.predictions == TRUE & test$edits == FALSE)
 glm.test.FN = sum(glm.test.predictions == FALSE & test$edits == TRUE)
 glm.test.sens = glm.test.TP / (glm.test.TP + glm.test.FN)
-glm.test.spec = glm.test.TN / (glm.test.TP + glm.test.FN)
+glm.test.spec = glm.test.TN / (glm.test.FP + glm.test.TN)
 
 #################################################################
 library(randomForest)
@@ -141,7 +143,7 @@ linear.svm.test.TN = sum(linear.svm.test.predictions == FALSE & test$edits == FA
 linear.svm.test.FP = sum(linear.svm.test.predictions == TRUE & test$edits == FALSE)
 linear.svm.test.FN = sum(linear.svm.test.predictions == FALSE & test$edits == TRUE)
 linear.svm.test.sens = linear.svm.test.TP / (linear.svm.test.TP + linear.svm.test.FN)
-linear.svm.test.spec = linear.svm.test.TN / (linear.svm.test.TP + linear.svm.test.FN)
+linear.svm.test.spec = linear.svm.test.TN / (linear.svm.test.FP + linear.svm.test.TN)
 
 
 radial.svm.model = svm(formula, data = train,  kernel="radial")
@@ -152,8 +154,7 @@ radial.svm.test.TN = sum(radial.svm.test.predictions == FALSE & test$edits == FA
 radial.svm.test.FP = sum(radial.svm.test.predictions == TRUE & test$edits == FALSE)
 radial.svm.test.FN = sum(radial.svm.test.predictions == FALSE & test$edits == TRUE)
 radial.svm.test.sens = radial.svm.test.TP / (radial.svm.test.TP + radial.svm.test.FN)
-radial.svm.test.spec = radial.svm.test.TN / (radial.svm.test.TP + radial.svm.test.FN)
-
+radial.svm.test.spec = radial.svm.test.TN / (radial.svm.test.FP + radial.svm.test.TN)
 
 
 
@@ -196,7 +197,7 @@ gbm.test.TN = sum(gbm.test.predictions < 0.5 & test$edits == 0)
 gbm.test.FP = sum(gbm.test.predictions > 0.5 & test$edits == 0)
 gbm.test.FN = sum(gbm.test.predictions < 0.5 & test$edits == 1)
 gbm.test.sens = gbm.test.TP / (gbm.test.TP + gbm.test.FN)
-gbm.test.spec = gbm.test.TN / (gbm.test.TP + gbm.test.FN)
+gbm.test.spec = gbm.test.TN / (gbm.test.FP + gbm.test.TN)
 
 summary(gbm_model)
 
