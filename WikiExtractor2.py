@@ -63,6 +63,7 @@ import bz2
 import os.path
 from htmlentitydefs import name2codepoint
 from difflib import SequenceMatcher
+import string
 
 ### PARAMS ####################################################################
 previous = ""
@@ -127,6 +128,7 @@ def WikiDocument(out, user_from, user_to, timestamp, subject, text):
     header = '%s\t%s\t%s\t%s\t' % (user_to, user_from, timestamp, subject)
     header = header.encode('utf-8')
 
+    text = clean(text)
     ###find the diff
     s = SequenceMatcher(None, previous, text)
     opcodes = s.get_opcodes()
@@ -139,7 +141,7 @@ def WikiDocument(out, user_from, user_to, timestamp, subject, text):
             diff.append(text[j1:j2])
 
     diff = "".join(diff)
-    diff = clean(diff)
+    ###diff = clean(diff)
     ###
     out.reserve(len(header) + len(subject) + len(diff))
     print >> out, header,
@@ -458,10 +460,16 @@ def clean(text):
     text = text.replace('==', '') #remove title markup
     text = text.replace('/*', '') #remove title markup
     text = text.replace('*/', '') #remove title markup
-    signature = text.find('(talk)')
-    text = re.sub(r'^:+','',text) #remove indentation markup
-    if signature > 0:
-        text = text[:signature-1]
+    #signature = text.find('(talk)')
+    #text = re.sub(r'^:+','',text) #remove indentation markup
+    #if signature > 0:
+    #    text = text[:signature-1]
+
+    #remove punctuation and make lowercase
+    #exclude = set(string.punctuation)
+    #table = string.maketrans("","")
+    #text = text.strip()
+    #text = text.translate(table, string.punctuation).lower()
     return text
 
 section = re.compile(r'(==+)\s*(.*?)\s*\1')
@@ -581,6 +589,7 @@ tagRE = re.compile(r'(.*?)<(/?\w+)[^>]*>(?:([^<]*)(<.*?>)?)?')
 
 def process_data(input, output):
     global prefix
+    global previous
 
     page = []
     subject = []
@@ -640,11 +649,13 @@ def process_data(input, output):
             inText = False
         elif inText:
             page.append(line)
-        elif tag == '/page' or tag == '/revision':
+        elif tag == '/page':
+            previous = ""
+            print user_to.encode('utf-8')
+        elif tag == '/revision':
             #colon = title.find(':')
             #if (colon < 0 or title[:colon] in acceptedNamespaces) and \
             #        not redirect:
-            print user_to.encode('utf-8'), user_from.encode('utf-8')
             sys.stdout.flush()
             #variable 'page' contains the text of the document
             WikiDocument(output, user_from, user_to, timestamp, ''.join(subject), ''.join(page))
