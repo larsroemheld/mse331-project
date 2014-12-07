@@ -4,16 +4,18 @@
 #
 
 
-
+# Read rolling dataset, sanitize column names and numerical order, and figure out WoW significant changes
 data = read.csv("rolling_dataset_sigmas.csv", header=TRUE)
+data <- data[order(data$user_id, data$user_age),]
 
-data$user_id = NULL
 data$edits_num = data$edits
-data$edits = as.factor(abs(data$edits - data$n1_numWeekEdits) > data$std_dev)
-# LR: > 0 implies "is it greater". Replace with sigma for threshold analysis.
+$data$edits = NULL
 
+# Used for determining significant WoW change: +/-1 sigma, i.e. the empirical standard deviation of edits 
+# for each user from registration up to every week.
+data$edits_wow_change = as.factor(abs(data$edits_num - data$n1_numWeekEdits) > data$std_dev)
 
-#normalize sentiment scores
+# Normalize sentiment scores
 data$n1_liu_positive_score     = data$n1_liu_positive_score / data$n1_word_count
 data$n1_liu_negative_score     = data$n1_liu_negative_score / data$n1_word_count
 data$n1_nrc_anger_score        = data$n1_nrc_anger_score / data$n1_word_count
@@ -40,16 +42,8 @@ data$n2_nrc_sadness_score      = data$n2_nrc_sadness_score / data$n2_word_count
 data$n2_nrc_surprise_score     = data$n2_nrc_surprise_score / data$n2_word_count
 data$n2_nrc_trust_score        = data$n2_nrc_trust_score / data$n2_word_count
 
-data[is.na(data)] = 0
 
-#remove observations with more than 1000 edits
-#data = data[data$edits <= 1000,]
-
-# LR: display how often edits is TRUE (i.e. greater than sigma/0)
-sum(data$edits > 0) / nrow(data)
-
-
-#split dataset into train and test sets
+# Split dataset into train and test sets (and split them the same way every time this is run)
 set.seed(1)
 ############balance the classes by discarding some examples with zero edits
 #pos.examples = data[data$edits > 0 ,]
@@ -63,10 +57,12 @@ train <- data[-in.test,]
 test <- data[in.test,]
 
 
-
-
-sum(train$edits > 0) / nrow(train)
-sum(test$edits > 0) / nrow(test)
+print("Share of significant WoW edits changes in the data:")
+sum(data$edits_wow_change == TRUE) / nrow(data)
+print("Share of significant WoW edits changes in training set:")
+sum(train$edits_wow_change == TRUE) / nrow(train)
+print("Share of significant WoW edits changes in test set:")
+sum(test$edits_wow_change == TRUE) / nrow(test)
 
 formula = as.formula(edits ~ 
                        user_age + 
