@@ -1,4 +1,4 @@
-data = read.csv("rolling_dataset.csv", header=TRUE)
+data = read.csv("rolling_dataset_sigmas.csv", header=TRUE)
 
 users = read.delim("all-users-2013.tsv", sep="\t", quote="", header=TRUE)
 data <- merge(data, users, by.x="user_id", by.y="user_id", all.x=TRUE)
@@ -15,20 +15,34 @@ dt2 = data[user_registration < 20130201000000,
            by="user_id"]
 dt2 = dt2[order(-num_edits)]
 
+# Make sure user_id appears as factor label, not numerical value
 data$user_id = as.factor(data$user_id)
 
-plot_data = data[data$user_id == dt2$user_id[1] | data$user_id == dt2$user_id[6] | data$user_id == dt2$user_id[3] | data$user_id == dt2$user_id[4] | data$user_id == dt2$user_id[5]]
-qplot(user_age, edits, data=plot_data, color=user_id, geom="line", main="Activity of Rockstar Editors", size=I(1))
+theme_set(theme_gray(base_size = 24))
+# Plot a hand-selected overview of some rockstar editors
+plot_data = data[data$user_id == dt2$user_id[1] | data$user_id == dt2$user_id[5] | data$user_id == dt2$user_id[10] | data$user_id == dt2$user_id[2]]
+overview <- qplot(user_age, edits, data=plot_data, color=user_id, geom="line", main="Activity of Rockstar Editors", xlab = "Weeks since registration", ylab="Edits in Week", size=I(1))
+overview
 
+# Plot a fancy visualization of \tau - neighborhoods and events
+plot_data = data[data$user_id == dt2$user_id[5]]
+p <- qplot(user_age, edits, data=plot_data, color=user_id, geom="line", main="Sample τ-Neighborhood & Events", xlab = "Weeks since registration", ylab="Edits in Week", size=I(1))
+p <- p + geom_ribbon(data = data[data$user_id == dt2$user_id[5]], aes(ymin=n1_numWeekEdits-std_dev, ymax=n1_numWeekEdits+std_dev), alpha=0.2)
 
-for (i in seq(1,20,1)) {
-  #####png(paste('user',i,'.png', sep=""))
-  data3 = data[data$user_id == dt2$user_id[1],]
-  data4 = data[data$user_id == dt2$user_id[2000],]
-  
-  p1 <- qplot(data3$user_age, data3$edits, geom="line")
-  p2 <- qplot(data4$user_age, data4$edits, geom="line")
-  
-  #  lines(data3$user_age-1, data3$n1_word_count, type='o', col='red')
-  #####dev.off()
+lines = data[data$user_id == dt2$user_id[5]]
+lines$changeevent = abs(lines$edits - lines$n1_numWeekEdits) > lines$std_dev
+for (l in 1:nrow(lines)) {
+  if (lines[l]$changeevent) {
+#    p <- p + geom_vline(x = lines[l]$user_age, color = "blue", size = I(1))
+    p <- p + geom_point(x = lines[l]$user_age, y = lines[l]$edits, color="#0072B2", size = I(5))
+  }
 }
+p <- p + theme_bw(base_size = 24)
+#p <- p + theme_grey() 
+p <- p + theme(legend.position="none")
+p
+
+
+
+lifetime_stats = data[, list(num_edits = sum(edits)), by="user_id"]
+nrow(lifetime_stats[num_edits > 1]) / nrow(lifetime_stats)
