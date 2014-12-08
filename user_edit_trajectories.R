@@ -3,27 +3,6 @@ library(data.table)
 
 data = data.table(data)
 
-
-dt = data[,
-          list(user_count = .N,
-               num_edits = mean(edits),
-               num_thanks = mean(thanks),
-               word_count = mean(n1_word_count),
-               liu_positive_score     = mean(n1_liu_positive_score),
-               liu_negative_score     = mean(n1_liu_negative_score),
-               nrc_anger_score        = mean(n1_nrc_anger_score),
-               nrc_anticipation_score = mean(n1_nrc_anticipation_score),
-               nrc_disgust_score      = mean(n1_nrc_disgust_score),
-               nrc_fear_score         = mean(n1_nrc_fear_score),
-               nrc_joy_score          = mean(n1_nrc_joy_score),
-               nrc_negative_score     = mean(n1_nrc_negative_score),
-               nrc_positive_score     = mean(n1_nrc_positive_score),
-               nrc_sadness_score      = mean(n1_nrc_sadness_score),
-               nrc_surprise_score     = mean(n1_nrc_surprise_score),
-               nrc_trust_score        = mean(n1_nrc_trust_score)),
-          by="user_age"]
-
-
 dt2 = data[,
            list(user_count = .N,
                 num_edits = mean(edits),
