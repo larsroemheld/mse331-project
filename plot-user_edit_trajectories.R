@@ -21,7 +21,8 @@ data$user_id = as.factor(data$user_id)
 theme_set(theme_gray(base_size = 24))
 # Plot a hand-selected overview of some rockstar editors
 plot_data = data[data$user_id == dt2$user_id[1] | data$user_id == dt2$user_id[5] | data$user_id == dt2$user_id[10] | data$user_id == dt2$user_id[2]]
-overview <- qplot(user_age, edits, data=plot_data, color=user_id, geom="line", main="Activity of Rockstar Editors", xlab = "Weeks since registration", ylab="Edits in Week", size=I(1))
+overview <- qplot(user_age, edits, data=plot_data, color=user_id, geom="line", main="Activity of 4 Rockstar Editors", xlab = "Weeks since registration", ylab="Edits in Week", size=I(1))
+overview <- overview + theme(legend.position="none")
 overview
 
 # Plot a fancy visualization of \tau - neighborhoods and events
